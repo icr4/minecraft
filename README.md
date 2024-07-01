@@ -11,6 +11,8 @@ A Minecraft server implementation in Elixir. Until this reaches version 1.0, ple
 
 You can view [the documentation on Hex](https://hexdocs.pm/minecraft/).
 
+![Screenshot](./docs/screenshot.png)
+
 ## Minecraft Protocol
 
 The Minecraft Protocol is documented on [wiki.vg](http://wiki.vg/Protocol). The current goal is to support version (1.12.2, protocol 340).
@@ -42,7 +44,7 @@ The following list of to-do items should be enough to be able to play on the ser
 - [x] Client: Login Start
 - [x] Server: Encryption Request
 - [x] Client: Encryption Response
-- [ ] *(optional)* Server: Set Compression
+- [ ] _(optional)_ Server: Set Compression
 - [x] Server: Login Success
 - [ ] Server: Disconnect
 
