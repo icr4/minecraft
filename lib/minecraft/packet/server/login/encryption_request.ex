@@ -1,19 +1,21 @@
 defmodule Minecraft.Packet.Server.Login.EncryptionRequest do
   @moduledoc false
   import Minecraft.Packet,
-    only: [decode_string: 1, decode_varint: 1, encode_string: 1, encode_varint: 1]
+    only: [decode_string: 1, decode_varint: 1, encode_string: 1, encode_varint: 1, encode_bool: 1]
 
   @type t :: %__MODULE__{
           packet_id: 1,
           server_id: String.t(),
           public_key: binary,
-          verify_token: binary
+          verify_token: binary,
+          should_authenticate: boolean
         }
 
   defstruct packet_id: 1,
             server_id: nil,
             public_key: nil,
-            verify_token: nil
+            verify_token: nil,
+            should_authenticate: false
 
   @spec serialize(t) :: {packet_id :: 1, binary}
   def serialize(%__MODULE__{} = packet) do
@@ -22,7 +24,8 @@ defmodule Minecraft.Packet.Server.Login.EncryptionRequest do
 
     {1,
      <<encode_string(packet.server_id)::binary, public_key_len::binary, packet.public_key::binary,
-       verify_token_len::binary, packet.verify_token::binary>>}
+       verify_token_len::binary, packet.verify_token::binary,
+       encode_bool(packet.should_authenticate)::binary>>}
   end
 
   @spec deserialize(binary) :: {t, rest :: binary}

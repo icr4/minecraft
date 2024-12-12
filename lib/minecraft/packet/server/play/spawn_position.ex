@@ -9,7 +9,7 @@ defmodule Minecraft.Packet.Server.Play.SpawnPosition do
 
   @spec serialize(t) :: {packet_id :: 0x46, binary}
   def serialize(%__MODULE__{position: position}) do
-    {0x46, encode_position(position)}
+    {0x46, encode_position(position) <> <<0.0::little-signed-float-size(32)>>}
   end
 
   @spec deserialize(binary) :: {t, rest :: binary}

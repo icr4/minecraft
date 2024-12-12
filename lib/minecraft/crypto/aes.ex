@@ -16,7 +16,15 @@ defmodule Minecraft.Crypto.AES do
   end
 
   defp decrypt(<<head::1-binary, rest::binary>>, %__MODULE__{} = state, decrypted) do
-    plain_text = :crypto.block_decrypt(:aes_cfb8, state.key, state.ivec, head)
+    plain_text =
+      :crypto.crypto_one_time(
+        map_algorithm(:aes_cfb8, state.key),
+        state.key,
+        state.ivec,
+        head,
+        false
+      )
+
     ivec = next_ivec(state.ivec, head)
     decrypt(rest, %__MODULE__{state | ivec: ivec}, [decrypted | plain_text])
   end
@@ -34,7 +42,15 @@ defmodule Minecraft.Crypto.AES do
   end
 
   defp encrypt(<<head::1-binary, rest::binary>>, %__MODULE__{} = state, encrypted) do
-    cipher_text = :crypto.block_encrypt(:aes_cfb8, state.key, state.ivec, head)
+    cipher_text =
+      :crypto.crypto_one_time(
+        map_algorithm(:aes_cfb8, state.key),
+        state.key,
+        state.ivec,
+        head,
+        true
+      )
+
     ivec = next_ivec(state.ivec, cipher_text)
     encrypt(rest, %__MODULE__{state | ivec: ivec}, [encrypted | cipher_text])
   end
@@ -46,5 +62,13 @@ defmodule Minecraft.Crypto.AES do
   defp next_ivec(ivec, data) when byte_size(data) == 1 and byte_size(ivec) == 16 do
     <<_::1-binary, rest::15-binary>> = ivec
     <<rest::binary, data::binary>>
+  end
+
+  defp map_algorithm(:aes_cfb8, key) do
+    case bit_size(key) do
+      128 -> :aes_128_cfb8
+      192 -> :aes_192_cfb8
+      256 -> :aes_256_cfb8
+    end
   end
 end

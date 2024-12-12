@@ -25,7 +25,7 @@ defmodule Minecraft.HandshakeTest do
              TestClient.send(client, %Client.Status.Request{})
 
     assert Poison.decode!(response.json) == %{
-             "version" => %{"name" => "1.12.2", "protocol" => 340},
+             "version" => %{"name" => "1.12.2", "protocol" => 769},
              "players" => %{"max" => 20, "online" => 0, "sample" => []},
              "description" => %{"text" => "Elixir Minecraft"}
            }

@@ -28,9 +28,9 @@ defmodule Minecraft.Server do
   """
   @spec start_link(server_opts) :: {:ok, pid()} | {:error, term()}
   def start_link(opts \\ []) do
-    max_connections = Keyword.get(opts, :max_connections, 100)
     port = Keyword.get(opts, :port, 25565)
-    ranch_opts = [port: port, max_connections: max_connections]
+    ranch_opts = [port: port]
+
     :ranch.start_listener(:minecraft_server, :ranch_tcp, ranch_opts, Minecraft.Protocol, [])
   end
 end

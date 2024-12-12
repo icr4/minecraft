@@ -13,24 +13,24 @@ defmodule Minecraft.Protocol.Handler do
   @spec handle(packet :: Minecraft.Packet.packet_types(), Connection.t()) ::
           {:ok, :noreply | struct, Connection.t()}
           | {:error, :unsupported_protocol, Connection.t()}
-  def handle(%Client.Handshake{protocol_version: 340} = packet, conn) do
+  def handle(%Client.Handshake{protocol_version: 769} = packet, conn) do
     conn =
       conn
       |> Connection.put_state(packet.next_state)
-      |> Connection.put_protocol(340)
+      |> Connection.put_protocol(769)
       |> Connection.assign(:server_addr, packet.server_addr)
 
     {:ok, :noreply, conn}
   end
 
-  def handle(%Client.Handshake{protocol_version: _}, conn) do
+  def handle(%Client.Handshake{protocol_version: _ver}, conn) do
     {:error, :unsupported_protocol, conn}
   end
 
   def handle(%Client.Status.Request{}, conn) do
     {:ok, json} =
       Poison.encode(%{
-        version: %{name: "1.12.2", protocol: 340},
+        version: %{name: "1.21.4", protocol: 769},
         players: %{max: 20, online: 0, sample: []},
         description: %{text: "Elixir Minecraft"}
       })
@@ -42,18 +42,20 @@ defmodule Minecraft.Protocol.Handler do
     {:ok, %Server.Status.Pong{payload: payload}, conn}
   end
 
-  def handle(%Client.Login.LoginStart{username: username}, conn) do
+  def handle(%Client.Login.LoginStart{username: username, profile_id: profile_id}, conn) do
     verify_token = :crypto.strong_rand_bytes(4)
 
     conn =
       conn
       |> Connection.assign(:username, username)
+      |> Connection.assign(:profile_id, profile_id)
       |> Connection.assign(:verify_token, verify_token)
 
     response = %Server.Login.EncryptionRequest{
       server_id: "",
       public_key: Crypto.get_public_key(),
-      verify_token: verify_token
+      verify_token: verify_token,
+      should_authenticate: true
     }
 
     {:ok, response, conn}
@@ -73,9 +75,14 @@ defmodule Minecraft.Protocol.Handler do
           |> Connection.put_state(:play)
           |> Connection.join()
 
+        Connection.send_packet(conn, %Server.Login.Compression{
+          threshold: 256
+        })
+
         response = %Server.Login.LoginSuccess{
           uuid: conn.assigns[:uuid],
-          username: conn.assigns[:username]
+          username: conn.assigns[:username],
+          properties: conn.assigns[:properties]
         }
 
         {:ok, response, conn}

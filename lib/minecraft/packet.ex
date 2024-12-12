@@ -2,7 +2,7 @@ defmodule Minecraft.Packet do
   @moduledoc """
   Base serialization and deserialization routines for packets.
   """
-  use Bitwise
+  import Bitwise
   alias Minecraft.Packet.Client
   alias Minecraft.Packet.Server
 
@@ -83,13 +83,16 @@ defmodule Minecraft.Packet do
 
       # Server Login Packets
       # TODO {:login, 0, :server} ->
-      # Server.Login.Disconnect.deserialize(data)
+      # Server.Login.LoginDisconnect.deserialize(data)
 
       {:login, 1, :server} ->
         Server.Login.EncryptionRequest.deserialize(data)
 
       {:login, 2, :server} ->
         Server.Login.LoginSuccess.deserialize(data)
+
+      {:login, 3, :server} ->
+        Server.Login.LoginAck.deserialize(data)
 
       # Client Play Packets
       {:play, 0, :client} ->

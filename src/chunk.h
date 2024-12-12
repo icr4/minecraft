@@ -41,5 +41,4 @@ struct Chunk {
 struct ChunkSection *generate_chunk_section(uint8_t *heightmap,
                                             int32_t chunk_y);
 
-ERL_NIF_TERM serialize_chunk_section(ErlNifEnv *env,
-                                     struct ChunkSection *chunk_section);
+ERL_NIF_TERM serialize_chunk_section(ErlNifEnv *env, struct ChunkSection *chunk_section);

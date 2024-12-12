@@ -15,7 +15,7 @@ You can view [the documentation on Hex](https://hexdocs.pm/minecraft/).
 
 ## Minecraft Protocol
 
-The Minecraft Protocol is documented on [wiki.vg](http://wiki.vg/Protocol). The current goal is to support version (1.12.2, protocol 340).
+The Minecraft Protocol is documented on [wiki.vg](http://wiki.vg/Protocol). The current goal is to support version (1.21.4, protocol 769).
 
 ## To-do
 

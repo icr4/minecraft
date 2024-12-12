@@ -143,8 +143,10 @@ defmodule Minecraft.Connection do
     url = @has_joined_url <> query_params
 
     with %{body: body, status_code: 200} <- HTTPoison.get!(url),
-         %{"id" => uuid, "name" => ^username} <- Poison.decode!(body) do
-      assign(conn, :uuid, normalize_uuid(uuid))
+         %{"id" => uuid, "name" => ^username, "properties" => props} <- Poison.decode!(body) do
+      conn
+      |> assign(:uuid, normalize_uuid(uuid))
+      |> assign(:properties, props)
     else
       _ ->
         {:error, :failed_login_verification}
